@@ -1,4 +1,4 @@
-# AI_Database
+# natural language database
 
 ## Overview
 This is an AI powered database query tool that can be used to query databases using natural language. The tool uses openAI's GPT-3.5-turbo model to convert natural language queries to SQL queries, and then convert the results back to natural language. 
@@ -10,8 +10,8 @@ This is an AI powered database query tool that can be used to query databases us
 ## Installation
 1. Clone the repository:
    ```
-   git clone <repository_url>
-   cd AI_Database
+   git clone https://github.com/BSchoolland/natural-language-database.git
+   cd natural-language-database
    ```
 
 2. Create and activate a virtual environment:
