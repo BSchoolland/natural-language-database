@@ -3,7 +3,9 @@ import os
 from dotenv import load_dotenv
 from database import create_connection, execute_query, get_schema
 import tkinter as tk
-from tkinter import simpledialog, scrolledtext
+from tkinter import simpledialog, scrolledtext, font
+import threading
+import time
 
 # Load environment variables from .env file
 load_dotenv()
@@ -64,12 +66,11 @@ def send_message(event=None):
     if user_input.lower() == "exit":
         root.destroy()
     else:
-        conversation_history.append({"role": "user", "content": user_input})
         response = get_gpt_response(user_input)
         
         chat_history.config(state=tk.NORMAL)
-        chat_history.insert(tk.END, "You: " + user_input + "\n")
-        chat_history.insert(tk.END, "AI: " + response + "\n")
+        chat_history.insert(tk.END, "You: " + user_input + "\n", 'user')
+        chat_history.insert(tk.END, "AI: " + response + "\n", 'ai')
         chat_history.yview(tk.END)  # Auto-scroll to the end
         chat_history.config(state=tk.DISABLED)
 
@@ -78,19 +79,30 @@ def main():
     root = tk.Tk()
     root.title("GPT-3.5 Turbo Chat")
 
+    # Styling configurations
+    chat_font = font.Font(family="Helvetica", size=12)
+    input_font = font.Font(family="Helvetica", size=12, weight="bold")
+    button_font = font.Font(family="Helvetica", size=12, weight="bold")
+    
     # Chat history area
-    chat_history = scrolledtext.ScrolledText(root, state='disabled', width=70, height=20)
-    chat_history.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
+    chat_history = scrolledtext.ScrolledText(root, state='disabled', width=70, height=20, font=chat_font, wrap=tk.WORD, padx=10, pady=10, borderwidth=2, relief="sunken")
+    chat_history.tag_config('user', foreground="#28527a")
+    chat_history.tag_config('ai', foreground="#00a30b")
+    chat_history.grid(row=0, column=0, columnspan=2, sticky="nsew", padx=20, pady=10)
 
     # User input box
-    user_input_box = tk.Entry(root, width=52)
-    user_input_box.grid(row=1, column=0, padx=10, pady=10)
+    user_input_box = tk.Entry(root, font=input_font, width=50, borderwidth=2, relief="groove")
+    user_input_box.grid(row=1, column=0, sticky="ew", padx=20)
     user_input_box.bind("<Return>", send_message)  # Bind the Enter key to send messages
 
     # Send button
-    send_button = tk.Button(root, text="Send", command=send_message)
-    send_button.grid(row=1, column=1, padx=10, pady=10)
+    send_button = tk.Button(root, text="Send", command=send_message, font=button_font, relief="raised", borderwidth=2)
+    send_button.grid(row=1, column=1, padx=10, pady=10, sticky="ew")
 
+    # Configure grid weights for resizing
+    root.grid_rowconfigure(0, weight=1)
+    root.grid_columnconfigure(0, weight=1)
+    
     root.mainloop()
 
 if __name__ == "__main__":
